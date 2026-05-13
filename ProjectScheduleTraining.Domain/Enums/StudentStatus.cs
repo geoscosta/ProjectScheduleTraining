@@ -1,6 +1,6 @@
 ﻿namespace ProjectScheduleTraining.Domain.Enums
 {
-    public enum StudentsStatus
+    public enum StudentStatus
     {
         Active = 1,
         Inactive = 2,
