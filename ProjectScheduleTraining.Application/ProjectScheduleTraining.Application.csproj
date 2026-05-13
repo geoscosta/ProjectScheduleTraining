@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectScheduleTraining.Domain\ProjectScheduleTraining.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Agenda\Commands\" />
+    <Folder Include="Agenda\DTOs\" />
+    <Folder Include="Agenda\Queries\" />
+    <Folder Include="Financial\Commands\" />
+    <Folder Include="Financial\DTOs\" />
+    <Folder Include="Financial\Queries\" />
+    <Folder Include="Common\" />
+    <Folder Include="Plans\Commands\" />
+    <Folder Include="Plans\DTOs\" />
+    <Folder Include="Plans\Queries\" />
+    <Folder Include="Students\Commands\" />
+    <Folder Include="Students\DTOs\" />
+    <Folder Include="Students\Mappings\" />
+    <Folder Include="Students\Validators\" />
+    <Folder Include="Students\Queries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="MediatR" Version="14.1.0" />
+  </ItemGroup>
+
+</Project>
