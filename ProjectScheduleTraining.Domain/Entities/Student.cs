@@ -16,5 +16,10 @@ namespace ProjectScheduleTraining.Domain.Entities
         public string? InternalNotes { get; set; }
         public StudentStatus Status { get; set; }
         public DateTime StartDate { get; set; }
+
+        // Navegação
+        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+        public ICollection<Scheduling> Schedulings { get; set; } = new List<Scheduling>();
+        public ICollection<Financial> Financials { get; set; } = new List<Financial>();
     }
 }

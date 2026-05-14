@@ -15,7 +15,6 @@
     <Folder Include="Logging\" />
     <Folder Include="Security\" />
     <Folder Include="Persistence\Migrations\" />
-    <Folder Include="Persistence\Repositories\" />
   </ItemGroup>
 
   <ItemGroup>
