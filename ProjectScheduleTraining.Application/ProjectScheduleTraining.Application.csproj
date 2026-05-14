@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ProjectScheduleTraining.CrossCutting\ProjectScheduleTraining.CrossCutting.csproj" />
     <ProjectReference Include="..\ProjectScheduleTraining.Domain\ProjectScheduleTraining.Domain.csproj" />
   </ItemGroup>
 
@@ -21,11 +22,6 @@
     <Folder Include="Plans\Commands\" />
     <Folder Include="Plans\DTOs\" />
     <Folder Include="Plans\Queries\" />
-    <Folder Include="Students\Commands\" />
-    <Folder Include="Students\DTOs\" />
-    <Folder Include="Students\Mappings\" />
-    <Folder Include="Students\Validators\" />
-    <Folder Include="Students\Queries\" />
   </ItemGroup>
 
   <ItemGroup>

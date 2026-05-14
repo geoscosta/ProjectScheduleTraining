@@ -6,9 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ProjectScheduleTraining.Application\ProjectScheduleTraining.Application.csproj" />
-    <ProjectReference Include="..\ProjectScheduleTraining.Domain\ProjectScheduleTraining.Domain.csproj" />
-  </ItemGroup>
-
 </Project>
