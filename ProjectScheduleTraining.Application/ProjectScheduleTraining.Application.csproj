@@ -18,9 +18,6 @@
     <Folder Include="Financial\Commands\" />
     <Folder Include="Financial\DTOs\" />
     <Folder Include="Financial\Queries\" />
-    <Folder Include="Plans\Commands\" />
-    <Folder Include="Plans\DTOs\" />
-    <Folder Include="Plans\Queries\" />
   </ItemGroup>
 
   <ItemGroup>
