@@ -1,7 +1,7 @@
 ﻿using ProjectScheduleTraining.Application.Students.DTOs;
 using ProjectScheduleTraining.Domain.Entities;
 
-namespace ProjectScheduleTraining.Application.Students.Mappings
+namespace ProjectScheduleTraining.Application.Students.Mappers
 {
     /// <summary>
     /// Responsável por mapear a entidade Student para os DTOs de resposta.

@@ -1,6 +1,6 @@
 ﻿using ProjectScheduleTraining.Application.Enrollments.DTOs;
 using ProjectScheduleTraining.Application.Plans.Mappers;
-using ProjectScheduleTraining.Application.Students.Mappings;
+using ProjectScheduleTraining.Application.Students.Mappers;
 using ProjectScheduleTraining.Domain.Entities;
 
 namespace ProjectScheduleTraining.Application.Enrollments.Mappers

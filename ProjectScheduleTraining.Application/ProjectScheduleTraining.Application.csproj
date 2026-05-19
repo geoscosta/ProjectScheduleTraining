@@ -15,9 +15,6 @@
     <Folder Include="Agenda\Commands\" />
     <Folder Include="Agenda\DTOs\" />
     <Folder Include="Agenda\Queries\" />
-    <Folder Include="Financial\Commands\" />
-    <Folder Include="Financial\DTOs\" />
-    <Folder Include="Financial\Queries\" />
   </ItemGroup>
 
   <ItemGroup>

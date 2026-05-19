@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using ProjectScheduleTraining.Application.Students.Commands;
 using ProjectScheduleTraining.Application.Students.DTOs;
-using ProjectScheduleTraining.Application.Students.Mappings;
+using ProjectScheduleTraining.Application.Students.Mappers;
 using ProjectScheduleTraining.Domain.Exceptions;
 using ProjectScheduleTraining.Domain.Interfaces.Repositories;
 
