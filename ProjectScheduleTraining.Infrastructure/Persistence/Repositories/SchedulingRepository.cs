@@ -38,5 +38,15 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Repositories
             => await _dbSet.AnyAsync(
                 x => x.StudentId == studentId && x.ScheduleId == scheduleId,
                 cancellationToken);
+
+        /// <summary>
+        /// Busca um agendamento pelo identificador único incluindo
+        /// os dados do aluno e do horário.
+        /// </summary>
+        public async Task<Scheduling?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default)
+            => await _dbSet
+                .Include(x => x.Student)
+                .Include(x => x.Schedule)
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 }
