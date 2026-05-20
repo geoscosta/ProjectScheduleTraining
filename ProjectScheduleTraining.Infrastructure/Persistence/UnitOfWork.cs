@@ -16,6 +16,8 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence
         public IScheduleRepository Schedules { get; }
         public ISchedulingRepository Schedulings { get; }
         public IFinancialRepository Financials { get; }
+        public IUserRepository Users { get; }
+        public IRefreshTokenRepository RefreshTokens { get; }
 
         public UnitOfWork(AppDbContext context)
         {
@@ -26,6 +28,8 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence
             Schedules = new ScheduleRepository(context);
             Schedulings = new SchedulingRepository(context);
             Financials = new FinancialRepository(context);
+            Users = new UserRepository(context);
+            RefreshTokens = new RefreshTokenRepository(context);
         }
 
         /// <summary>

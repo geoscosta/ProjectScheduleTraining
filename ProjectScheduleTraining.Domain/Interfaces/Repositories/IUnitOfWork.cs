@@ -8,6 +8,8 @@
         IScheduleRepository Schedules { get; }
         ISchedulingRepository Schedulings { get; }
         IFinancialRepository Financials { get; }
+        IUserRepository Users { get; }
+        IRefreshTokenRepository RefreshTokens { get; }
 
         Task<int> CommitAsync(CancellationToken cancellationToken = default);
         Task BeginTransactionAsync(CancellationToken cancellationToken = default);

@@ -25,7 +25,7 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Mappings
             builder.HasIndex(x => new { x.StudentId, x.DueDate });
 
             builder.HasOne(x => x.Student)
-                .WithMany()
+                .WithMany(x => x.Financials)
                 .HasForeignKey(x => x.StudentId)
                 .OnDelete(DeleteBehavior.Restrict);
 

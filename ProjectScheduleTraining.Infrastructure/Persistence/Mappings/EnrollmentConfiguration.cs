@@ -22,7 +22,7 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Mappings
                 .IsRequired();
 
             builder.HasOne(x => x.Student)
-                .WithMany()
+                .WithMany(x => x.Enrollments)
                 .HasForeignKey(x => x.StudentId)
                 .OnDelete(DeleteBehavior.Restrict);
 

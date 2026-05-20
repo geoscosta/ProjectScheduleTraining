@@ -15,6 +15,8 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Context
         public DbSet<Schedule> Schedules => Set<Schedule>();
         public DbSet<Scheduling> Schedulings => Set<Scheduling>();
         public DbSet<Financial> Financials => Set<Financial>();
+        public DbSet<User> Users => Set<User>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +31,8 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Context
             modelBuilder.Entity<Schedule>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<Scheduling>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<Financial>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<User>().HasQueryFilter(x => !x.IsDeleted);
+            modelBuilder.Entity<RefreshToken>().HasQueryFilter(x => !x.IsDeleted);
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

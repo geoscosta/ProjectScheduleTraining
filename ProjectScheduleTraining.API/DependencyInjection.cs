@@ -1,4 +1,5 @@
-﻿using ProjectScheduleTraining.API.Middlewares;
+﻿using ProjectScheduleTraining.API.Extensions;
+using ProjectScheduleTraining.API.Middlewares;
 using ProjectScheduleTraining.Application;
 using ProjectScheduleTraining.Infrastructure;
 
@@ -29,7 +30,7 @@ namespace ProjectScheduleTraining.API
                 });
 
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
+            services.AddSwaggerWithJwt();
 
             services.AddCors(options =>
                 options.AddPolicy("Frontend", policy =>
@@ -59,6 +60,7 @@ namespace ProjectScheduleTraining.API
             app.UseMiddleware<GlobalExceptionMiddleware>();
             app.UseHttpsRedirection();
             app.UseCors("Frontend");
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
 

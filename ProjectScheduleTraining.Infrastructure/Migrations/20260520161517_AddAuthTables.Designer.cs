@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectScheduleTraining.Infrastructure.Persistence.Context;
 
@@ -11,9 +12,11 @@ using ProjectScheduleTraining.Infrastructure.Persistence.Context;
 namespace ProjectScheduleTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260520161517_AddAuthTables")]
+    partial class AddAuthTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,6 +55,9 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                     b.Property<Guid>("StudentId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("StudentId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -60,6 +66,8 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                     b.HasIndex("PlanId");
 
                     b.HasIndex("StudentId");
+
+                    b.HasIndex("StudentId1");
 
                     b.ToTable("Enrollments", (string)null);
                 });
@@ -102,12 +110,17 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                     b.Property<Guid>("StudentId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("StudentId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EnrollmentId");
+
+                    b.HasIndex("StudentId1");
 
                     b.HasIndex("StudentId", "DueDate");
 
@@ -276,6 +289,9 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                     b.Property<Guid>("StudentId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("StudentId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("TrainerNotes")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
@@ -286,6 +302,8 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ScheduleId");
+
+                    b.HasIndex("StudentId1");
 
                     b.HasIndex("StudentId", "ScheduleId")
                         .IsUnique();
@@ -422,10 +440,14 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("ProjectScheduleTraining.Domain.Entities.Student", "Student")
-                        .WithMany("Enrollments")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("ProjectScheduleTraining.Domain.Entities.Student", null)
+                        .WithMany("Enrollments")
+                        .HasForeignKey("StudentId1");
 
                     b.Navigation("Plan");
 
@@ -440,10 +462,14 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ProjectScheduleTraining.Domain.Entities.Student", "Student")
-                        .WithMany("Financials")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("ProjectScheduleTraining.Domain.Entities.Student", null)
+                        .WithMany("Financials")
+                        .HasForeignKey("StudentId1");
 
                     b.Navigation("Enrollment");
 
@@ -470,10 +496,14 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("ProjectScheduleTraining.Domain.Entities.Student", "Student")
-                        .WithMany("Schedulings")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("ProjectScheduleTraining.Domain.Entities.Student", null)
+                        .WithMany("Schedulings")
+                        .HasForeignKey("StudentId1");
 
                     b.Navigation("Schedule");
 

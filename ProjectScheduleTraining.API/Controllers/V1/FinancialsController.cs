@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectScheduleTraining.Application.Financials.Commands;
 using ProjectScheduleTraining.Application.Financials.DTOs;
@@ -11,6 +12,7 @@ namespace ProjectScheduleTraining.API.Controllers.V1
     /// </summary>
     [ApiController]
     [Route("api/v1/[controller]")]
+    [Authorize]
     public class FinancialsController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectScheduleTraining.Application.Enrollments.Commands;
 using ProjectScheduleTraining.Application.Enrollments.DTOs;
@@ -11,6 +12,7 @@ namespace ProjectScheduleTraining.API.Controllers.V1
     /// </summary>
     [ApiController]
     [Route("api/v1/[controller]")]
+    [Authorize]
     public class EnrollmentsController : ControllerBase
     {
         private readonly IMediator _mediator;
