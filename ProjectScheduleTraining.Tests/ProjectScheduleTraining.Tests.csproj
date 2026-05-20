@@ -33,7 +33,6 @@
   <ItemGroup>
     <Folder Include="Integration\" />
     <Folder Include="Unit\Domain\" />
-    <Folder Include="Unit\Application\" />
     <Folder Include="Unit\Infrastructure\" />
   </ItemGroup>
 
