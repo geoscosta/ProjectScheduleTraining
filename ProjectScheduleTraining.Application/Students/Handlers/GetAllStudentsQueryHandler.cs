@@ -19,17 +19,20 @@ namespace ProjectScheduleTraining.Application.Students.Handlers
         }
 
         /// <summary>
-        /// Processa a query de listagem de alunos ativos.
-        /// Retorna uma lista resumida ordenada por nome.
+        /// Processa a query de listagem de alunos.
+        /// Utiliza GetAllAsync para retornar todos os alunos não deletados,
+        /// incluindo os bloqueados, pois o soft delete já filtra os inativados.
         /// </summary>
         public async Task<IEnumerable<StudentSummaryResponse>> Handle(
             GetAllStudentsQuery request,
             CancellationToken cancellationToken)
         {
             var students = await _unitOfWork.Students
-                .GetActiveStudentsAsync(cancellationToken);
+                .GetAllAsync(cancellationToken);
 
-            return students.Select(StudentMapper.ToSummaryResponse);
+            return students
+                .OrderBy(s => s.Name)
+                .Select(StudentMapper.ToSummaryResponse);
         }
     }
 }

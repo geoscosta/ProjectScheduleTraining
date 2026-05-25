@@ -27,11 +27,11 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Repositories
         /// <summary>
         /// Retorna todos os alunos com status ativo, ordenados por nome.
         /// </summary>
-        public async Task<IEnumerable<Student>> GetActiveStudentsAsync(CancellationToken cancellationToken = default)
-            => await _dbSet
-                .Where(x => x.Status == StudentStatus.Active)
-                .OrderBy(x => x.Name)
-                .ToListAsync(cancellationToken);
+        //public async Task<IEnumerable<Student>> GetActiveStudentsAsync(CancellationToken cancellationToken = default)
+        //    => await _dbSet
+        //        .Where(x => x.Status == StudentStatus.Active)
+        //        .OrderBy(x => x.Name)
+        //        .ToListAsync(cancellationToken);
 
         /// <summary>
         /// Retorna todos os alunos que possuem cobranças vencidas ou pendentes com data de vencimento ultrapassada.
