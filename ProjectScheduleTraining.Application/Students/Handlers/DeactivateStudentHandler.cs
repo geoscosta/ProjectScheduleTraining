@@ -40,6 +40,16 @@ namespace ProjectScheduleTraining.Application.Students.Handlers
                     "Aluno já está inativo.",
                     "STUDENT_ALREADY_INACTIVE");
 
+            /// Impede a inativação se houver matrícula ativa vinculada ao aluno.
+            /// O usuário deve cancelar a matrícula antes de inativar o aluno.
+            var enrollment = await _unitOfWork.Enrollments
+                .GetByStudentIdAsync(request.Id, cancellationToken);
+
+            if (enrollment is not null && enrollment.IsActive)
+                throw new DomainException(
+                    "Não é possível inativar um aluno com matrícula ativa. Cancele a matrícula antes de inativar.",
+                    "STUDENT_HAS_ACTIVE_ENROLLMENT");
+
             student.Status = StudentStatus.Inactive;
 
             _unitOfWork.Students.Update(student);

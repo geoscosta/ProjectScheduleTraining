@@ -40,6 +40,16 @@ namespace ProjectScheduleTraining.Application.Students.Handlers
                     "Aluno já está bloqueado.",
                     "STUDENT_ALREADY_BLOCKED");
 
+            /// Impede o bloqueio se houver matrícula ativa vinculada ao aluno.
+            /// O usuário deve cancelar a matrícula antes de bloquear o aluno.
+            var enrollment = await _unitOfWork.Enrollments
+                .GetByStudentIdAsync(request.Id, cancellationToken);
+
+            if (enrollment is not null && enrollment.IsActive)
+                throw new DomainException(
+                    "Não é possível bloquear um aluno com matrícula ativa. Cancele a matrícula antes de bloquear.",
+                    "STUDENT_HAS_ACTIVE_ENROLLMENT");
+
             student.Status = StudentStatus.Blocked;
 
             _unitOfWork.Students.Update(student);
