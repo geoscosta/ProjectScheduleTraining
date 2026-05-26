@@ -37,15 +37,23 @@ namespace ProjectScheduleTraining.Application.Financials.Handlers
                     "Cobrança não encontrada.",
                     "FINANCIAL_NOT_FOUND");
 
+            /// Impede o registro de pagamento para cobranças já pagas.
             if (financial.Status == FinancialStatus.Paid)
                 throw new DomainException(
                     "Cobrança já foi paga.",
                     "FINANCIAL_ALREADY_PAID");
 
+            /// Impede o registro de pagamento para cobranças canceladas.
             if (financial.Status == FinancialStatus.Cancelled)
                 throw new DomainException(
-                    "Não é possível registrar pagamento de uma cobrança cancelada.",
+                    "Não é possível registrar pagamento para uma cobrança cancelada.",
                     "FINANCIAL_CANCELLED");
+
+            /// Impede o registro de pagamento para cobranças isentas.
+            if (financial.Status == FinancialStatus.Exempt)
+                throw new DomainException(
+                    "Não é possível registrar pagamento para uma cobrança isenta.",
+                    "FINANCIAL_EXEMPT");
 
             financial.Status = FinancialStatus.Paid;
             financial.PaymentDate = DateTime.UtcNow;
