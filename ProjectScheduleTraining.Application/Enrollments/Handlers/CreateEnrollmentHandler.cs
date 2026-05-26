@@ -11,7 +11,8 @@ namespace ProjectScheduleTraining.Application.Enrollments.Handlers
 {
     /// <summary>
     /// Handler responsável por processar o comando de criação de uma nova matrícula.
-    /// Valida a existência do aluno e do plano antes de persistir a matrícula.
+    /// Valida a existência e status do aluno, existência e status do plano,
+    /// e se o aluno já não possui matrícula ativa antes de persistir.
     /// </summary>
     public class CreateEnrollmentHandler : IRequestHandler<CreateEnrollmentCommand, EnrollmentResponse>
     {
@@ -24,7 +25,8 @@ namespace ProjectScheduleTraining.Application.Enrollments.Handlers
 
         /// <summary>
         /// Processa o comando de criação da matrícula.
-        /// Valida se o aluno e o plano existem e se o aluno não possui matrícula ativa.
+        /// Valida sequencialmente: existência do aluno, status do aluno,
+        /// existência do plano, status do plano e matrícula duplicada.
         /// </summary>
         public async Task<EnrollmentResponse> Handle(
             CreateEnrollmentCommand request,
