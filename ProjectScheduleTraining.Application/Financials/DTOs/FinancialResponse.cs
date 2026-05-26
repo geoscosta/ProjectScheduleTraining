@@ -20,4 +20,18 @@ namespace ProjectScheduleTraining.Application.Financials.DTOs
         DateTime CreatedAt,
         DateTime UpdatedAt,
         StudentSummaryResponse? Student);
+
+    /// <summary>
+    /// DTO de resposta do relatório financeiro mensal.
+    /// Consolida os totais de recebimentos, cobranças em aberto e vencidas.
+    /// </summary>
+    public record FinancialReportResponse(
+        int Month,
+        int Year,
+        decimal TotalReceived,
+        decimal TotalPending,
+        decimal TotalOverdue,
+        int CountReceived,
+        int CountPending,
+        int CountOverdue);
 }

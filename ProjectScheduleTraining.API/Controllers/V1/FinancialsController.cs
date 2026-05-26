@@ -102,5 +102,26 @@ namespace ProjectScheduleTraining.API.Controllers.V1
             await _mediator.Send(new CancelFinancialCommand(id), cancellationToken);
             return NoContent();
         }
+
+        /// <summary>
+        /// Retorna o relatório financeiro consolidado de um mês específico.
+        /// </summary>
+        [HttpGet("report")]
+        [ProducesResponseType(typeof(FinancialReportResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetReport(
+            [FromQuery] int month,
+            [FromQuery] int year,
+            CancellationToken cancellationToken)
+        {
+            var currentDate = DateTime.UtcNow;
+            var reportMonth = month > 0 ? month : currentDate.Month;
+            var reportYear = year > 0 ? year : currentDate.Year;
+
+            var result = await _mediator.Send(
+                new GetFinancialReportQuery(reportMonth, reportYear),
+                cancellationToken);
+
+            return Ok(result);
+        }
     }
 }
