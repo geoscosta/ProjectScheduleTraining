@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using ProjectScheduleTraining.Domain.Common;
 using ProjectScheduleTraining.Domain.Entities;
+using ProjectScheduleTraining.Infrastructure.Persistence.Mappings;
 
 namespace ProjectScheduleTraining.Infrastructure.Persistence.Context
 {
@@ -17,6 +18,12 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Context
         public DbSet<Financial> Financials => Set<Financial>();
         public DbSet<User> Users => Set<User>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+        public DbSet<StudentMeasure> StudentMeasures => Set<StudentMeasure>();
+        public DbSet<ParQAssessment> ParQAssessments => Set<ParQAssessment>();
+        public DbSet<StudentContract> StudentContracts => Set<StudentContract>();
+        public DbSet<StudentWorkout> StudentWorkouts => Set<StudentWorkout>();
+        public DbSet<WorkoutExercise> WorkoutExercises => Set<WorkoutExercise>();
+        public DbSet<ScheduleLock> ScheduleLocks => Set<ScheduleLock>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,6 +40,13 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Context
             modelBuilder.Entity<Financial>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<User>().HasQueryFilter(x => !x.IsDeleted);
             modelBuilder.Entity<RefreshToken>().HasQueryFilter(x => !x.IsDeleted);
+
+            modelBuilder.ApplyConfiguration(new StudentMeasureConfiguration());
+            modelBuilder.ApplyConfiguration(new ParQAssessmentConfiguration());
+            modelBuilder.ApplyConfiguration(new StudentContractConfiguration());
+            modelBuilder.ApplyConfiguration(new StudentWorkoutConfiguration());
+            modelBuilder.ApplyConfiguration(new WorkoutExerciseConfiguration());
+            modelBuilder.ApplyConfiguration(new ScheduleLockConfiguration());
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

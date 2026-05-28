@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectScheduleTraining.Domain\ProjectScheduleTraining.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

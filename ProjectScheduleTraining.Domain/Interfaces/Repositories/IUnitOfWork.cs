@@ -10,6 +10,11 @@
         IFinancialRepository Financials { get; }
         IUserRepository Users { get; }
         IRefreshTokenRepository RefreshTokens { get; }
+        IStudentMeasureRepository StudentMeasures { get; }
+        IParQAssessmentRepository ParQAssessments { get; }
+        IStudentContractRepository StudentContracts { get; }
+        IStudentWorkoutRepository StudentWorkouts { get; }
+        IScheduleLockRepository ScheduleLocks { get; }
 
         Task<int> CommitAsync(CancellationToken cancellationToken = default);
         Task BeginTransactionAsync(CancellationToken cancellationToken = default);

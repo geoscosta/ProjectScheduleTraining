@@ -66,6 +66,11 @@ namespace ProjectScheduleTraining.Infrastructure
             services.AddScoped<IFinancialRepository, FinancialRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IStudentMeasureRepository, StudentMeasureRepository>();
+            services.AddScoped<IParQAssessmentRepository, ParQAssessmentRepository>();
+            services.AddScoped<IStudentContractRepository, StudentContractRepository>();
+            services.AddScoped<IStudentWorkoutRepository, StudentWorkoutRepository>();
+            services.AddScoped<IScheduleLockRepository, ScheduleLockRepository>();
 
             return services;
         }

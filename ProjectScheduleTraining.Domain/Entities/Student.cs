@@ -21,5 +21,10 @@ namespace ProjectScheduleTraining.Domain.Entities
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<Scheduling> Schedulings { get; set; } = new List<Scheduling>();
         public ICollection<Financial> Financials { get; set; } = new List<Financial>();
+        public ICollection<StudentMeasure> Measures { get; set; } = new List<StudentMeasure>();
+        public ICollection<ParQAssessment> ParQAssessments { get; set; } = new List<ParQAssessment>();
+        public ICollection<StudentContract> Contracts { get; set; } = new List<StudentContract>();
+        public ICollection<StudentWorkout> Workouts { get; set; } = new List<StudentWorkout>();
+        public ICollection<ScheduleLock> ScheduleLocks { get; set; } = new List<ScheduleLock>();
     }
 }

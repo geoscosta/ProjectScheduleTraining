@@ -18,6 +18,11 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence
         public IFinancialRepository Financials { get; }
         public IUserRepository Users { get; }
         public IRefreshTokenRepository RefreshTokens { get; }
+        public IStudentMeasureRepository StudentMeasures { get; }
+        public IParQAssessmentRepository ParQAssessments { get; }
+        public IStudentContractRepository StudentContracts { get; }
+        public IStudentWorkoutRepository StudentWorkouts { get; }
+        public IScheduleLockRepository ScheduleLocks { get; }
 
         public UnitOfWork(AppDbContext context)
         {
@@ -30,6 +35,11 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence
             Financials = new FinancialRepository(context);
             Users = new UserRepository(context);
             RefreshTokens = new RefreshTokenRepository(context);
+            StudentMeasures = new StudentMeasureRepository(context);
+            ParQAssessments = new ParQAssessmentRepository(context);
+            StudentContracts = new StudentContractRepository(context);
+            StudentWorkouts = new StudentWorkoutRepository(context);
+            ScheduleLocks = new ScheduleLockRepository(context);
         }
 
         /// <summary>
