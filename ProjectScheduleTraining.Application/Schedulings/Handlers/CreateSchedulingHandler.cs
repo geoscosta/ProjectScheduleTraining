@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using ProjectScheduleTraining.Application.Schedulings.Commands;
 using ProjectScheduleTraining.Application.Schedulings.DTOs;
 using ProjectScheduleTraining.Application.Schedulings.Mappers;
@@ -11,7 +11,9 @@ namespace ProjectScheduleTraining.Application.Schedulings.Handlers;
 
 /// <summary>
 /// Handler responsável por processar o comando de criação de um novo agendamento.
-/// Valida status do aluno, matrícula ativa, disponibilidade do horário e duplicidade.
+/// Executa dentro de uma transação explícita para evitar race condition em OccupiedSlots:
+/// sem transação, dois requests simultâneos poderiam passar pela verificação de capacidade
+/// e ambos inserir agendamentos em uma turma com apenas 1 vaga restante.
 /// </summary>
 public class CreateSchedulingHandler : IRequestHandler<CreateSchedulingCommand, SchedulingResponse>
 {
@@ -23,7 +25,7 @@ public class CreateSchedulingHandler : IRequestHandler<CreateSchedulingCommand, 
     }
 
     /// <summary>
-    /// Processa o comando de criação do agendamento.
+    /// Processa o comando de criação do agendamento dentro de uma transação.
     /// Ordem de validação:
     /// 1. Aluno existe e está ativo
     /// 2. Aluno possui matrícula ativa
@@ -35,89 +37,88 @@ public class CreateSchedulingHandler : IRequestHandler<CreateSchedulingCommand, 
         CreateSchedulingCommand request,
         CancellationToken cancellationToken)
     {
-        /// Valida existência do aluno.
-        var student = await _unitOfWork.Students
-            .GetByIdAsync(request.StudentId, cancellationToken);
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-        if (student is null)
-            throw new DomainException(
-                "Aluno não encontrado.",
-                "STUDENT_NOT_FOUND");
-
-        /// Valida se o aluno está ativo para realizar agendamentos.
-        if (student.Status == StudentStatus.Inactive)
-            throw new DomainException(
-                "Não é possível agendar para um aluno inativo.",
-                "STUDENT_INACTIVE");
-
-        if (student.Status == StudentStatus.Blocked)
-            throw new DomainException(
-                "Não é possível agendar para um aluno bloqueado.",
-                "STUDENT_BLOCKED");
-
-        /// Valida se o aluno possui matrícula ativa.
-        var enrollment = await _unitOfWork.Enrollments
-            .GetByStudentIdAsync(request.StudentId, cancellationToken);
-
-        if (enrollment is null || !enrollment.IsActive)
-            throw new DomainException(
-                "Aluno não possui matrícula ativa. Realize a matrícula antes de agendar.",
-                "STUDENT_NO_ACTIVE_ENROLLMENT");
-
-        /// Valida existência e disponibilidade do horário.
-        var schedule = await _unitOfWork.Schedules
-            .GetByIdAsync(request.ScheduleId, cancellationToken);
-
-        if (schedule is null)
-            throw new DomainException(
-                "Horário não encontrado.",
-                "SCHEDULE_NOT_FOUND");
-
-        if (schedule.Status == ScheduleStatus.Cancelled)
-            throw new DomainException(
-                "Horário cancelado. Selecione outro horário.",
-                "SCHEDULE_CANCELLED");
-
-        if (schedule.Status == ScheduleStatus.Blocked)
-            throw new DomainException(
-                "Horário bloqueado. Selecione outro horário.",
-                "SCHEDULE_BLOCKED");
-
-        if (schedule.Status == ScheduleStatus.Full ||
-            schedule.OccupiedSlots >= schedule.MaxCapacity)
-            throw new DomainException(
-                "Turma lotada. Não há vagas disponíveis nesse horário.",
-                "SCHEDULE_FULL");
-
-        /// Valida se já existe agendamento para o aluno neste horário.
-        var schedulingExists = await _unitOfWork.Schedulings
-            .SchedulingExistsAsync(request.StudentId, request.ScheduleId, cancellationToken);
-
-        if (schedulingExists)
-            throw new DomainException(
-                "Aluno já possui agendamento nesse horário.",
-                "SCHEDULING_ALREADY_EXISTS");
-
-        var scheduling = new Scheduling
+        try
         {
-            StudentId = request.StudentId,
-            ScheduleId = request.ScheduleId,
-            Status = SchedulingStatus.Scheduled,
-            IsMakeup = request.IsMakeup
-        };
+            var student = await _unitOfWork.Students
+                .GetByIdAsync(request.StudentId, cancellationToken);
 
-        schedule.OccupiedSlots++;
+            if (student is null)
+                throw new DomainException("Aluno não encontrado.", "STUDENT_NOT_FOUND");
 
-        if (schedule.OccupiedSlots >= schedule.MaxCapacity)
-            schedule.Status = ScheduleStatus.Full;
+            if (student.Status == StudentStatus.Inactive)
+                throw new DomainException(
+                    "Não é possível agendar para um aluno inativo.", "STUDENT_INACTIVE");
 
-        await _unitOfWork.Schedulings.AddAsync(scheduling, cancellationToken);
-        _unitOfWork.Schedules.Update(schedule);
-        await _unitOfWork.CommitAsync(cancellationToken);
+            if (student.Status == StudentStatus.Blocked)
+                throw new DomainException(
+                    "Não é possível agendar para um aluno bloqueado.", "STUDENT_BLOCKED");
 
-        scheduling.Student = student;
-        scheduling.Schedule = schedule;
+            var enrollment = await _unitOfWork.Enrollments
+                .GetByStudentIdAsync(request.StudentId, cancellationToken);
 
-        return SchedulingMapper.ToResponse(scheduling);
+            if (enrollment is null || !enrollment.IsActive)
+                throw new DomainException(
+                    "Aluno não possui matrícula ativa. Realize a matrícula antes de agendar.",
+                    "STUDENT_NO_ACTIVE_ENROLLMENT");
+
+            var schedule = await _unitOfWork.Schedules
+                .GetByIdAsync(request.ScheduleId, cancellationToken);
+
+            if (schedule is null)
+                throw new DomainException("Horário não encontrado.", "SCHEDULE_NOT_FOUND");
+
+            if (schedule.Status == ScheduleStatus.Cancelled)
+                throw new DomainException(
+                    "Horário cancelado. Selecione outro horário.", "SCHEDULE_CANCELLED");
+
+            if (schedule.Status == ScheduleStatus.Blocked)
+                throw new DomainException(
+                    "Horário bloqueado. Selecione outro horário.", "SCHEDULE_BLOCKED");
+
+            // A verificação de capacidade e o incremento estão dentro da transação.
+            // Isso garante que dois requests concorrentes não passem ambos por aqui
+            // com OccupiedSlots = MaxCapacity - 1 e ambos insiram um agendamento a mais.
+            if (schedule.Status == ScheduleStatus.Full ||
+                schedule.OccupiedSlots >= schedule.MaxCapacity)
+                throw new DomainException(
+                    "Turma lotada. Não há vagas disponíveis nesse horário.", "SCHEDULE_FULL");
+
+            var schedulingExists = await _unitOfWork.Schedulings
+                .SchedulingExistsAsync(request.StudentId, request.ScheduleId, cancellationToken);
+
+            if (schedulingExists)
+                throw new DomainException(
+                    "Aluno já possui agendamento nesse horário.", "SCHEDULING_ALREADY_EXISTS");
+
+            var scheduling = new Scheduling
+            {
+                StudentId = request.StudentId,
+                ScheduleId = request.ScheduleId,
+                Status = SchedulingStatus.Scheduled,
+                IsMakeup = request.IsMakeup
+            };
+
+            schedule.OccupiedSlots++;
+
+            if (schedule.OccupiedSlots >= schedule.MaxCapacity)
+                schedule.Status = ScheduleStatus.Full;
+
+            await _unitOfWork.Schedulings.AddAsync(scheduling, cancellationToken);
+            _unitOfWork.Schedules.Update(schedule);
+            await _unitOfWork.CommitAsync(cancellationToken);
+            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
+            scheduling.Student = student;
+            scheduling.Schedule = schedule;
+
+            return SchedulingMapper.ToResponse(scheduling);
+        }
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+            throw;
+        }
     }
 }
