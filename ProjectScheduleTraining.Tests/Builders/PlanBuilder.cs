@@ -56,6 +56,34 @@ namespace ProjectScheduleTraining.Tests.Builders
         }
 
         /// <summary>
+        /// Define o tipo do plano e ajusta a duração automaticamente.
+        /// </summary>
+        public PlanBuilder WithType(PlanType type)
+        {
+            _type = type;
+
+            /// Ajusta a duração automaticamente conforme o tipo do plano.
+            _durationMonths = type switch
+            {
+                PlanType.Quarterly => 3,
+                PlanType.SemiAnnual => 6,
+                PlanType.Annual => 12,
+                _ => 1
+            };
+
+            return this;
+        }
+
+        /// <summary>
+        /// Define a frequência semanal do plano.
+        /// </summary>
+        public PlanBuilder WithWeeklyFrequency(WeeklyFrequency frequency)
+        {
+            _weeklyFrequency = frequency;
+            return this;
+        }
+
+        /// <summary>
         /// Constrói e retorna a instância do plano com os dados configurados.
         /// </summary>
         public Plan Build()

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using ProjectScheduleTraining.Application.Enrollments.DTOs;
+using ProjectScheduleTraining.Domain.Enums;
 
 namespace ProjectScheduleTraining.Application.Enrollments.Commands
 {
@@ -10,5 +11,6 @@ namespace ProjectScheduleTraining.Application.Enrollments.Commands
     public record CreateEnrollmentCommand(
         Guid StudentId,
         Guid PlanId,
-        int PaymentDueDay) : IRequest<EnrollmentResponse>;
+        PaymentDueDay PaymentDueDay,
+        PaymentMethod PaymentMethod) : IRequest<EnrollmentResponse>;
 }

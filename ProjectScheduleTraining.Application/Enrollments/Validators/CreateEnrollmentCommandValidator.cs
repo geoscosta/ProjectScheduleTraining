@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using ProjectScheduleTraining.Application.Enrollments.Commands;
+using ProjectScheduleTraining.Domain.Enums;
 
 namespace ProjectScheduleTraining.Application.Enrollments.Validators
 {
@@ -12,14 +13,18 @@ namespace ProjectScheduleTraining.Application.Enrollments.Validators
         public CreateEnrollmentCommandValidator()
         {
             RuleFor(x => x.StudentId)
-                .NotEmpty().WithMessage("Identificador do aluno é obrigatório.");
+                .NotEmpty().WithMessage("Aluno é obrigatório.");
 
             RuleFor(x => x.PlanId)
-                .NotEmpty().WithMessage("Identificador do plano é obrigatório.");
+                .NotEmpty().WithMessage("Plano é obrigatório.");
 
             RuleFor(x => x.PaymentDueDay)
-                .InclusiveBetween(1, 28)
-                .WithMessage("Dia de vencimento deve ser entre 1 e 28.");
+                .Must(day => Enum.IsDefined(typeof(PaymentDueDay), day))
+                .WithMessage("Dia de vencimento deve ser 5, 10, 15 ou 20.");
+
+            RuleFor(x => x.PaymentMethod)
+            .IsInEnum()
+            .WithMessage("Método de pagamento inválido.");
         }
     }
 }

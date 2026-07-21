@@ -8,7 +8,13 @@ namespace ProjectScheduleTraining.Domain.Entities
         public DateTime Date { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
+
+        /// Tipo da sessão — define a capacidade máxima automaticamente.
+        public SessionType SessionType { get; set; }
+
+        /// Capacidade calculada automaticamente pelo SessionType.
         public int MaxCapacity { get; set; }
+
         public int OccupiedSlots { get; set; }
         public ScheduleStatus Status { get; set; }
         public string? Notes { get; set; }

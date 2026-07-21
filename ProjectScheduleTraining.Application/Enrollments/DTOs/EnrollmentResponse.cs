@@ -1,5 +1,6 @@
 ﻿using ProjectScheduleTraining.Application.Plans.DTOs;
 using ProjectScheduleTraining.Application.Students.DTOs;
+using ProjectScheduleTraining.Domain.Enums;
 
 namespace ProjectScheduleTraining.Application.Enrollments.DTOs
 {
@@ -13,7 +14,10 @@ namespace ProjectScheduleTraining.Application.Enrollments.DTOs
         Guid PlanId,
         DateTime StartDate,
         DateTime ExpirationDate,
-        int PaymentDueDay,
+        PaymentDueDay PaymentDueDay,
+        PaymentMethod PaymentMethod,
+        decimal DiscountPercentage,
+        decimal FinalPrice,
         bool IsActive,
         DateTime CreatedAt,
         DateTime UpdatedAt,

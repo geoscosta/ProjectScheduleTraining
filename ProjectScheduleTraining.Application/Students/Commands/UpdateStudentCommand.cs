@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using ProjectScheduleTraining.Application.Students.DTOs;
+using ProjectScheduleTraining.Domain.Enums;
 
 namespace ProjectScheduleTraining.Application.Students.Commands
 {
@@ -12,6 +13,21 @@ namespace ProjectScheduleTraining.Application.Students.Commands
         string Name,
         string Email,
         string Phone,
-        string? Address,
-        string? EmergencyContact) : IRequest<StudentResponse>;
+        DateTime BirthDate,
+        string? Profession,
+        MaritalStatus? MaritalStatus,
+        string? IdentityDocument,
+        string? Street,
+        string? AddressNumber,
+        string? Complement,
+        string? District,
+        string? City,
+        string? State,
+        string? ZipCode,
+        string? GuardianName,
+        string? GuardianCpf,
+        string? EmergencyContact,
+        bool ImageRightsAccepted,
+        bool InternalRegulationAccepted)
+        : IRequest<StudentResponse>;
 }

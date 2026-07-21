@@ -123,7 +123,8 @@ namespace ProjectScheduleTraining.Tests.Unit.Application.Students
                 PlanId = Guid.NewGuid(),
                 StartDate = DateTime.UtcNow,
                 ExpirationDate = DateTime.UtcNow.AddMonths(1),
-                PaymentDueDay = 10,
+                PaymentDueDay = PaymentDueDay.Day10,
+                PaymentMethod = PaymentMethod.Cash,
                 IsActive = true
             };
 

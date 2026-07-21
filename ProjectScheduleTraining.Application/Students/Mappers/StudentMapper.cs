@@ -13,21 +13,35 @@ namespace ProjectScheduleTraining.Application.Students.Mappers
         /// Mapeia a entidade Student para o DTO de resposta completa.
         /// </summary>
         public static StudentResponse ToResponse(Student student)
-            => new(
-                student.Id,
-                student.Name,
-                student.Cpf,
-                student.Email,
-                student.Phone,
-                student.BirthDate,
-                student.Address,
-                student.EmergencyContact,
-                student.PhotoUrl,
-                student.InternalNotes,
-                student.Status,
-                student.StartDate,
-                student.CreatedAt,
-                student.UpdatedAt);
+                => new(
+                    student.Id,
+                    student.Name,
+                    student.Cpf,
+                    student.Email,
+                    student.Phone,
+                    student.BirthDate,
+                    student.Profession,
+                    student.MaritalStatus,
+                    student.IdentityDocument,
+                    student.Street,
+                    student.AddressNumber,
+                    student.Complement,
+                    student.District,
+                    student.City,
+                    student.State,
+                    student.ZipCode,
+                    student.GuardianName,
+                    student.GuardianCpf,
+                    student.EmergencyContact,
+                    student.PhotoUrl,
+                    student.RegistrationFeePaid,
+                    student.HealthCertificateExpiresAt,
+                    student.ImageRightsAccepted,
+                    student.InternalRegulationAccepted,
+                    student.Status,
+                    student.StartDate,
+                    student.CreatedAt,
+                    student.UpdatedAt);
 
         /// <summary>
         /// Mapeia a entidade Student para o DTO de resposta resumida.

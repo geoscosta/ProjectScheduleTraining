@@ -40,6 +40,13 @@ namespace ProjectScheduleTraining.Application.Students.Handlers
                     "Já existe um aluno cadastrado com esse CPF.",
                     "STUDENT_CPF_ALREADY_EXISTS");
 
+            /// Valida se o aluno é menor de idade e exige responsável.
+            var age = DateTime.UtcNow.Year - request.BirthDate.Year;
+            if (age < 18 && string.IsNullOrWhiteSpace(request.GuardianName))
+                throw new DomainException(
+                    "Alunos menores de 18 anos devem ter um responsável cadastrado.",
+                    "STUDENT_GUARDIAN_REQUIRED");
+
             var student = new Student
             {
                 Name = request.Name.Trim(),
@@ -47,8 +54,21 @@ namespace ProjectScheduleTraining.Application.Students.Handlers
                 Email = request.Email.Trim().ToLower(),
                 Phone = request.Phone.Trim(),
                 BirthDate = request.BirthDate,
-                Address = request.Address?.Trim(),
+                Profession = request.Profession?.Trim(),
+                MaritalStatus = request.MaritalStatus,
+                IdentityDocument = request.IdentityDocument?.Trim(),
+                Street = request.Street?.Trim(),
+                AddressNumber = request.AddressNumber?.Trim(),
+                Complement = request.Complement?.Trim(),
+                District = request.District?.Trim(),
+                City = request.City?.Trim(),
+                State = request.State?.Trim(),
+                ZipCode = request.ZipCode?.Trim(),
+                GuardianName = request.GuardianName?.Trim(),
+                GuardianCpf = request.GuardianCpf?.Trim(),
                 EmergencyContact = request.EmergencyContact?.Trim(),
+                ImageRightsAccepted = request.ImageRightsAccepted,
+                InternalRegulationAccepted = request.InternalRegulationAccepted,
                 Status = Domain.Enums.StudentStatus.Active,
                 StartDate = DateTime.UtcNow
             };

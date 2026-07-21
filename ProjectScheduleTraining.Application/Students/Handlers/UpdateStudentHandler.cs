@@ -39,8 +39,22 @@ namespace ProjectScheduleTraining.Application.Students.Handlers
             student.Name = request.Name.Trim();
             student.Email = request.Email.Trim().ToLower();
             student.Phone = request.Phone.Trim();
-            student.Address = request.Address?.Trim();
+            student.BirthDate = request.BirthDate;
+            student.Profession = request.Profession?.Trim();
+            student.MaritalStatus = request.MaritalStatus;
+            student.IdentityDocument = request.IdentityDocument?.Trim();
+            student.Street = request.Street?.Trim();
+            student.AddressNumber = request.AddressNumber?.Trim();
+            student.Complement = request.Complement?.Trim();
+            student.District = request.District?.Trim();
+            student.City = request.City?.Trim();
+            student.State = request.State?.Trim();
+            student.ZipCode = request.ZipCode?.Trim();
+            student.GuardianName = request.GuardianName?.Trim();
+            student.GuardianCpf = request.GuardianCpf?.Trim();
             student.EmergencyContact = request.EmergencyContact?.Trim();
+            student.ImageRightsAccepted = request.ImageRightsAccepted;
+            student.InternalRegulationAccepted = request.InternalRegulationAccepted;
 
             _unitOfWork.Students.Update(student);
             await _unitOfWork.CommitAsync(cancellationToken);

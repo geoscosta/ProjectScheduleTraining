@@ -37,8 +37,6 @@ public class CreateEnrollmentHandlerTests
         _unitOfWorkMock.Setup(u => u.CommitAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
-        /// Configura o mock padrão de enrollment como null
-        /// indicando que o aluno não possui matrícula ativa.
         _enrollmentRepositoryMock
             .Setup(r => r.GetByStudentIdAsync(
                 It.IsAny<Guid>(),
@@ -47,6 +45,10 @@ public class CreateEnrollmentHandlerTests
 
         _handler = new CreateEnrollmentHandler(_unitOfWorkMock.Object);
     }
+
+    /// Comando padrão para reuso nos testes — dia 10, pagamento à vista.
+    private static CreateEnrollmentCommand BuildCommand(Guid studentId, Guid planId)
+        => new(studentId, planId, PaymentDueDay.Day10, PaymentMethod.Cash);
 
     [Fact]
     public async Task Handle_WhenValidData_ShouldCreateEnrollment()
@@ -59,11 +61,6 @@ public class CreateEnrollmentHandlerTests
         var plan = new PlanBuilder()
             .WithIsActive(true)
             .Build();
-
-        var command = new CreateEnrollmentCommand(
-            student.Id,
-            plan.Id,
-            10);
 
         _studentRepositoryMock
             .Setup(r => r.GetByIdAsync(student.Id, It.IsAny<CancellationToken>()))
@@ -80,7 +77,9 @@ public class CreateEnrollmentHandlerTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler.Handle(
+            BuildCommand(student.Id, plan.Id),
+            CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -98,6 +97,44 @@ public class CreateEnrollmentHandlerTests
     }
 
     [Fact]
+    public async Task Handle_WhenValidData_ShouldApplyDiscountForLoyaltyPlan()
+    {
+        // Arrange
+        var student = new StudentBuilder()
+            .WithStatus(StudentStatus.Active)
+            .Build();
+
+        var plan = new PlanBuilder()
+            .WithIsActive(true)
+            .WithType(PlanType.Annual)
+            .WithPrice(396m)
+            .Build();
+
+        _studentRepositoryMock
+            .Setup(r => r.GetByIdAsync(student.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(student);
+
+        _planRepositoryMock
+            .Setup(r => r.GetByIdAsync(plan.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(plan);
+
+        _enrollmentRepositoryMock
+            .Setup(r => r.AddAsync(It.IsAny<Enrollment>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        /// Anual à vista = 20% de desconto.
+        var command = new CreateEnrollmentCommand(
+            student.Id, plan.Id, PaymentDueDay.Day10, PaymentMethod.Cash);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.DiscountPercentage.Should().Be(20m);
+        result.FinalPrice.Should().Be(316.80m);
+    }
+
+    [Fact]
     public async Task Handle_WhenStudentNotFound_ShouldThrowDomainException()
     {
         // Arrange
@@ -105,11 +142,10 @@ public class CreateEnrollmentHandlerTests
             .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Student?)null);
 
-        var command = new CreateEnrollmentCommand(
-            Guid.NewGuid(), Guid.NewGuid(), 10);
-
         // Act
-        var act = async () => await _handler.Handle(command, CancellationToken.None);
+        var act = async () => await _handler.Handle(
+            BuildCommand(Guid.NewGuid(), Guid.NewGuid()),
+            CancellationToken.None);
 
         // Assert
         await act.Should()
@@ -129,11 +165,10 @@ public class CreateEnrollmentHandlerTests
             .Setup(r => r.GetByIdAsync(student.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(student);
 
-        var command = new CreateEnrollmentCommand(
-            student.Id, Guid.NewGuid(), 10);
-
         // Act
-        var act = async () => await _handler.Handle(command, CancellationToken.None);
+        var act = async () => await _handler.Handle(
+            BuildCommand(student.Id, Guid.NewGuid()),
+            CancellationToken.None);
 
         // Assert
         await act.Should()
@@ -157,11 +192,10 @@ public class CreateEnrollmentHandlerTests
             .Setup(r => r.GetByIdAsync(student.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(student);
 
-        var command = new CreateEnrollmentCommand(
-            student.Id, Guid.NewGuid(), 10);
-
         // Act
-        var act = async () => await _handler.Handle(command, CancellationToken.None);
+        var act = async () => await _handler.Handle(
+            BuildCommand(student.Id, Guid.NewGuid()),
+            CancellationToken.None);
 
         // Assert
         await act.Should()
@@ -189,11 +223,10 @@ public class CreateEnrollmentHandlerTests
             .Setup(r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Plan?)null);
 
-        var command = new CreateEnrollmentCommand(
-            student.Id, Guid.NewGuid(), 10);
-
         // Act
-        var act = async () => await _handler.Handle(command, CancellationToken.None);
+        var act = async () => await _handler.Handle(
+            BuildCommand(student.Id, Guid.NewGuid()),
+            CancellationToken.None);
 
         // Assert
         await act.Should()
@@ -221,11 +254,10 @@ public class CreateEnrollmentHandlerTests
             .Setup(r => r.GetByIdAsync(plan.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(plan);
 
-        var command = new CreateEnrollmentCommand(
-            student.Id, plan.Id, 10);
-
         // Act
-        var act = async () => await _handler.Handle(command, CancellationToken.None);
+        var act = async () => await _handler.Handle(
+            BuildCommand(student.Id, plan.Id),
+            CancellationToken.None);
 
         // Assert
         await act.Should()
@@ -251,7 +283,8 @@ public class CreateEnrollmentHandlerTests
             PlanId = plan.Id,
             StartDate = DateTime.UtcNow,
             ExpirationDate = DateTime.UtcNow.AddMonths(1),
-            PaymentDueDay = 10,
+            PaymentDueDay = PaymentDueDay.Day10,
+            PaymentMethod = PaymentMethod.Cash,
             IsActive = true
         };
 
@@ -267,11 +300,10 @@ public class CreateEnrollmentHandlerTests
             .Setup(r => r.GetByStudentIdAsync(student.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingEnrollment);
 
-        var command = new CreateEnrollmentCommand(
-            student.Id, plan.Id, 10);
-
         // Act
-        var act = async () => await _handler.Handle(command, CancellationToken.None);
+        var act = async () => await _handler.Handle(
+            BuildCommand(student.Id, plan.Id),
+            CancellationToken.None);
 
         // Assert
         await act.Should()

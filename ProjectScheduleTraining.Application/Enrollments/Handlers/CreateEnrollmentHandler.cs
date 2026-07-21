@@ -2,6 +2,7 @@
 using ProjectScheduleTraining.Application.Enrollments.Commands;
 using ProjectScheduleTraining.Application.Enrollments.DTOs;
 using ProjectScheduleTraining.Application.Enrollments.Mappers;
+using ProjectScheduleTraining.CrossCutting.Helpers;
 using ProjectScheduleTraining.Domain.Entities;
 using ProjectScheduleTraining.Domain.Enums;
 using ProjectScheduleTraining.Domain.Exceptions;
@@ -72,6 +73,13 @@ namespace ProjectScheduleTraining.Application.Enrollments.Handlers
                     "Aluno já possui uma matrícula ativa.",
                     "ENROLLMENT_ALREADY_EXISTS");
 
+            /// Calcula desconto automaticamente conforme tipo do plano e método de pagamento.
+            var discountPercentage = PlanDiscountHelper.GetDiscountPercentage(
+                plan.Type,
+                request.PaymentMethod);
+
+            var finalPrice = PlanDiscountHelper.ApplyDiscount(plan.Price, discountPercentage);
+
             var enrollment = new Enrollment
             {
                 StudentId = request.StudentId,
@@ -79,6 +87,8 @@ namespace ProjectScheduleTraining.Application.Enrollments.Handlers
                 StartDate = DateTime.UtcNow,
                 ExpirationDate = DateTime.UtcNow.AddMonths(plan.DurationMonths),
                 PaymentDueDay = request.PaymentDueDay,
+                DiscountPercentage = discountPercentage,
+                FinalPrice = finalPrice,
                 IsActive = true
             };
 
