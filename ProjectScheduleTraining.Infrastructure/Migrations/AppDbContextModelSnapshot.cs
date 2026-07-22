@@ -381,6 +381,9 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("HasMedicalCertificate")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -390,6 +393,9 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                     b.Property<string>("JustifiedAbsenceReason")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("MakeupDeadline")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("ScheduleId")
                         .HasColumnType("uniqueidentifier");

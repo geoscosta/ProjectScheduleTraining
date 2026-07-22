@@ -50,5 +50,22 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Repositories
                     x.PaymentDate!.Value.Year == year &&
                     x.PaymentDate!.Value.Month == month)
                 .SumAsync(x => x.Amount, cancellationToken);
+
+        /// <summary>
+        /// Retorna IDs dos alunos com cobranças pendentes vencidas
+        /// há mais de N dias para bloqueio automático.
+        /// </summary>
+        public async Task<IEnumerable<Guid>> GetStudentIdsWithOverdueFinancialsAsync(int daysOverdue, CancellationToken cancellationToken = default)
+        {
+            var cutoffDate = DateTime.UtcNow.Date.AddDays(-daysOverdue);
+
+            return await _dbSet
+                .Where(f =>
+                    f.Status == FinancialStatus.Pending &&
+                    f.DueDate.Date <= cutoffDate)
+                .Select(f => f.StudentId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+        }
     }
 }

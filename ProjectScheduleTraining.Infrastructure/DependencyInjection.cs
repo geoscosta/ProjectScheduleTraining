@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using ProjectScheduleTraining.Domain.Interfaces;
 using ProjectScheduleTraining.Domain.Interfaces.Repositories;
+using ProjectScheduleTraining.Infrastructure.Jobs;
 using ProjectScheduleTraining.Infrastructure.Persistence;
 using ProjectScheduleTraining.Infrastructure.Persistence.Context;
 using ProjectScheduleTraining.Infrastructure.Security;
@@ -25,7 +26,8 @@ public static class DependencyInjection
             .AddDatabase(configuration)
             .AddUnitOfWork()
             .AddSecurity(configuration)
-            .AddJwtAuthentication(configuration);
+            .AddJwtAuthentication(configuration)
+            .AddJobs();
 
         return services;
     }
@@ -107,6 +109,18 @@ public static class DependencyInjection
                 policy.RequireRole("Admin", "Trainer", "Receptionist", "Student"));
         });
 
+        return services;
+    }
+
+    /// <summary>
+    /// Registra os background jobs da aplicação.
+    /// AutoBlockOverdueStudentsJob: bloqueia alunos com cobranças
+    /// vencidas há mais de 2 dias conforme Cláusula 32 do contrato.
+    /// </summary>
+    private static IServiceCollection AddJobs(
+        this IServiceCollection services)
+    {
+        services.AddHostedService<AutoBlockOverdueStudentsJob>();
         return services;
     }
 }

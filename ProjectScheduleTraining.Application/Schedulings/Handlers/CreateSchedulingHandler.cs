@@ -92,6 +92,34 @@ public class CreateSchedulingHandler : IRequestHandler<CreateSchedulingCommand, 
                 throw new DomainException(
                     "Aluno já possui agendamento nesse horário.", "SCHEDULING_ALREADY_EXISTS");
 
+            /// Valida regras de reposição quando IsMakeup = true.
+            if (request.IsMakeup)
+            {
+                /// Verifica antecedência mínima de 12 horas para reposição.
+                var scheduleDateTime = schedule.Date.Add(schedule.StartTime);
+                var hoursUntilClass = (scheduleDateTime - DateTime.UtcNow).TotalHours;
+
+                if (hoursUntilClass < 12)
+                    throw new DomainException(
+                        "Reposições devem ser agendadas com no mínimo 12 horas de antecedência.",
+                        "MAKEUP_INSUFFICIENT_NOTICE");
+
+                /// Verifica limite de 2 reposições por período de 30 dias.
+                /// Faltas com atestado médico não contam no limite.
+                if (!request.HasMedicalCertificate)
+                {
+                    var makeupCount = await _unitOfWork.Schedulings
+                        .CountMakeupSchedulingsInLast30DaysAsync(
+                            request.StudentId,
+                            cancellationToken);
+
+                    if (makeupCount >= 2)
+                        throw new DomainException(
+                            "Limite de 2 reposições por período de 30 dias atingido.",
+                            "MAKEUP_LIMIT_EXCEEDED");
+                }
+            }
+
             var scheduling = new Scheduling
             {
                 StudentId = request.StudentId,

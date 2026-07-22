@@ -56,6 +56,26 @@ public class CreateScheduleLockHandler
                 "Apenas alunos com planos Disciplina, Constância ou Foco Total podem trancar a agenda.",
                 "PLAN_NOT_ELIGIBLE_FOR_LOCK");
 
+        /// Valida o limite de dias de trancamento conforme o tipo do plano.
+        /// Anual: 30 dias 
+        /// Semestral: 15 dias 
+        /// Trimestral: 7 dias
+        var maxLockDays = plan.Type switch
+        {
+            PlanType.Annual         => 30,
+            PlanType.SemiAnnual     => 15,
+            PlanType.Quarterly      => 7,
+            _                       => 0
+        };
+
+        var requestedDays = (request.LockEndDate - request.LockStartDate).TotalDays;
+
+        if (requestedDays > maxLockDays)
+            throw new DomainException(
+                $"O plano {plan.Name} permite trancamento de até {maxLockDays} dias. " +
+                $"Período solicitado: {(int)requestedDays} dias.",
+                "SCHEDULE_LOCK_EXCEEDS_MAX_DAYS");
+
         var semester = SemesterHelper.GetSemester(request.LockStartDate);
         var year = request.LockStartDate.Year;
 

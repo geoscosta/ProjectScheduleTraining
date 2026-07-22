@@ -48,5 +48,22 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Repositories
                 .Include(x => x.Student)
                 .Include(x => x.Schedule)
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        /// <summary>
+        /// Conta as reposições do aluno nos últimos 30 dias
+        /// excluindo faltas com atestado médico.
+        /// </summary>
+        public async Task<int> CountMakeupSchedulingsInLast30DaysAsync(Guid studentId, CancellationToken cancellationToken = default)
+        {
+            var thirtyDaysAgo = DateTime.UtcNow.AddDays(-30);
+
+            return await _dbSet
+                .CountAsync(s =>
+                    s.StudentId == studentId &&
+                    s.IsMakeup &&
+                    !s.HasMedicalCertificate &&
+                    s.CreatedAt >= thirtyDaysAgo,
+                    cancellationToken);
+        }
     }
 }

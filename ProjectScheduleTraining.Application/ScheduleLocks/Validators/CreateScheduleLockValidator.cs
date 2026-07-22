@@ -31,10 +31,12 @@ namespace ProjectScheduleTraining.Application.ScheduleLocks.Validators
                 .GreaterThan(x => x.LockStartDate)
                 .WithMessage("Data de fim deve ser maior que a data de início.");
 
-            /// Valida que o período de trancamento não ultrapassa 90 dias.
+            /// Valida que o período de trancamento não ultrapassa 30 dias
+            /// (máximo permitido pelo contrato para o plano Anual).
+            /// A validação específica por tipo de plano é feita no handler.
             RuleFor(x => x)
-                .Must(x => (x.LockEndDate - x.LockStartDate).TotalDays <= 90)
-                .WithMessage("O período de trancamento não pode ultrapassar 90 dias.")
+                .Must(x => (x.LockEndDate - x.LockStartDate).TotalDays <= 30)
+                .WithMessage("O período de trancamento não pode ultrapassar 30 dias.")
                 .OverridePropertyName("LockEndDate");
 
             RuleFor(x => x.Justification)

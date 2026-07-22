@@ -13,5 +13,11 @@ namespace ProjectScheduleTraining.Domain.Interfaces.Repositories
         /// os dados do aluno e do horário.
         /// </summary>
         Task<Scheduling?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Conta quantas reposições o aluno utilizou nos últimos 30 dias.
+        /// Faltas com atestado médico não contam no limite.
+        /// </summary>
+        Task<int> CountMakeupSchedulingsInLast30DaysAsync(Guid studentId, CancellationToken cancellationToken = default);
     }
 }

@@ -8,5 +8,11 @@ namespace ProjectScheduleTraining.Domain.Interfaces.Repositories
         Task<IEnumerable<Financial>> GetOverdueAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<Financial>> GetDueInDaysAsync(int days, CancellationToken cancellationToken = default);
         Task<decimal> GetTotalReceivedByMonthAsync(int year, int month, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retorna os IDs dos alunos com cobranças vencidas
+        /// há mais de N dias e que ainda estão ativos.
+        /// </summary>
+        Task<IEnumerable<Guid>> GetStudentIdsWithOverdueFinancialsAsync(int daysOverdue, CancellationToken cancellationToken = default);
     }
 }
