@@ -75,9 +75,14 @@ public class EnrollmentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> Cancel(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Cancel(Guid id, [FromBody] CancelEnrollmentRequest? request, CancellationToken cancellationToken)
     {
-        await _mediator.Send(new CancelEnrollmentCommand(id), cancellationToken);
+        await _mediator.Send(
+            new CancelEnrollmentCommand(
+                id,
+                request?.CancellationOption,
+                request?.SubstituteStudentId), cancellationToken);
+
         return NoContent();
     }
 }

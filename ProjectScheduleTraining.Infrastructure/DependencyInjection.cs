@@ -121,6 +121,8 @@ public static class DependencyInjection
         this IServiceCollection services)
     {
         services.AddHostedService<AutoBlockOverdueStudentsJob>();
+        services.AddHostedService<YearEndRecessJob>();
+        services.AddHostedService<AnnualPriceReadjustmentJob>();
         return services;
     }
 }

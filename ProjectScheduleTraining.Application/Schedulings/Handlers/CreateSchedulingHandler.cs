@@ -95,6 +95,12 @@ public class CreateSchedulingHandler : IRequestHandler<CreateSchedulingCommand, 
             /// Valida regras de reposição quando IsMakeup = true.
             if (request.IsMakeup)
             {
+                /// Atestado médico obrigatório para TODAS as reposições.
+                if (!request.HasMedicalCertificate)
+                    throw new DomainException(
+                        "Reposições somente são permitidas mediante atestado médico.",
+                        "MAKEUP_MEDICAL_CERTIFICATE_REQUIRED");
+
                 /// Verifica antecedência mínima de 12 horas para reposição.
                 var scheduleDateTime = schedule.Date.Add(schedule.StartTime);
                 var hoursUntilClass = (scheduleDateTime - DateTime.UtcNow).TotalHours;
@@ -104,20 +110,17 @@ public class CreateSchedulingHandler : IRequestHandler<CreateSchedulingCommand, 
                         "Reposições devem ser agendadas com no mínimo 12 horas de antecedência.",
                         "MAKEUP_INSUFFICIENT_NOTICE");
 
-                /// Verifica limite de 2 reposições por período de 30 dias.
-                /// Faltas com atestado médico não contam no limite.
-                if (!request.HasMedicalCertificate)
-                {
-                    var makeupCount = await _unitOfWork.Schedulings
+                /// Limite de 2 reposições por mês — agora atestado é obrigatório
+                /// mas ainda conta no limite (não há mais isenção por atestado).
+                var makeupCount = await _unitOfWork.Schedulings
                         .CountMakeupSchedulingsInLast30DaysAsync(
                             request.StudentId,
                             cancellationToken);
 
-                    if (makeupCount >= 2)
-                        throw new DomainException(
-                            "Limite de 2 reposições por período de 30 dias atingido.",
-                            "MAKEUP_LIMIT_EXCEEDED");
-                }
+                if (makeupCount >= 2)
+                    throw new DomainException(
+                        "Limite de 2 reposições por mês atingido.",
+                        "MAKEUP_LIMIT_EXCEEDED");
             }
 
             var scheduling = new Scheduling

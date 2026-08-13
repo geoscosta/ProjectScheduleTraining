@@ -7,19 +7,19 @@ using ProjectScheduleTraining.Domain.Interfaces.Repositories;
 namespace ProjectScheduleTraining.Infrastructure.Jobs;
 
 /// <summary>
-/// Job responsável por bloquear automaticamente alunos
-/// com cobranças vencidas há mais de 2 dias conforme contrato.
-/// Executa diariamente às 08:00.
+/// Job responsável por cancelar automaticamente matrículas
+/// de alunos com cobranças vencidas há mais de 2 dias
+/// e liberar a vaga conforme novo contrato (Cláusula 3).
 /// </summary>
 public class AutoBlockOverdueStudentsJob : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<AutoBlockOverdueStudentsJob> _logger;
 
-    /// Dias de atraso antes de bloquear conforme contrato (Cláusula 32).
-    private const int DaysOverdueForBlock = 2;
+    /// Dias de atraso antes de cancelar conforme novo contrato.
+    private const int DaysOverdueForCancel = 2;
 
-    /// Intervalo de execução do job — verifica a cada 6 horas.
+    /// Intervalo de execução — verifica a cada 6 horas.
     private static readonly TimeSpan CheckInterval = TimeSpan.FromHours(6);
 
     public AutoBlockOverdueStudentsJob(
@@ -38,7 +38,7 @@ public class AutoBlockOverdueStudentsJob : BackgroundService
         {
             try
             {
-                await BlockOverdueStudentsAsync(stoppingToken);
+                await CancelOverdueEnrollmentsAsync(stoppingToken);
             }
             catch (Exception ex)
             {
@@ -50,45 +50,48 @@ public class AutoBlockOverdueStudentsJob : BackgroundService
     }
 
     /// <summary>
-    /// Busca alunos com cobranças vencidas há mais de 2 dias
-    /// e bloqueia automaticamente os que ainda estão ativos.
+    /// Cancela automaticamente matrículas com cobranças vencidas
+    /// há mais de 2 dias e libera a vaga para outros alunos.
+    /// Conforme novo contrato: atraso ou falta de comunicação
+    /// resulta em cancelamento da matrícula e disponibilização da vaga.
     /// </summary>
-    private async Task BlockOverdueStudentsAsync(CancellationToken cancellationToken)
+    private async Task CancelOverdueEnrollmentsAsync(CancellationToken cancellationToken)
     {
         using var scope = _scopeFactory.CreateScope();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
         var overdueStudentIds = await unitOfWork.Financials
             .GetStudentIdsWithOverdueFinancialsAsync(
-                DaysOverdueForBlock,
+                DaysOverdueForCancel,
                 cancellationToken);
 
-        var blockedCount = 0;
+        var cancelledCount = 0;
 
         foreach (var studentId in overdueStudentIds)
         {
-            var student = await unitOfWork.Students
-                .GetByIdAsync(studentId, cancellationToken);
+            /// Cancela a matrícula ativa do aluno inadimplente.
+            var enrollment = await unitOfWork.Enrollments
+                .GetByStudentIdAsync(studentId, cancellationToken);
 
-            if (student is null || student.Status != StudentStatus.Active)
+            if (enrollment is null || !enrollment.IsActive)
                 continue;
 
-            student.Status = StudentStatus.Blocked;
-            unitOfWork.Students.Update(student);
-            blockedCount++;
+            enrollment.IsActive = false;
+            unitOfWork.Enrollments.Update(enrollment);
+            cancelledCount++;
 
             _logger.LogWarning(
-                "Aluno {StudentId} ({StudentName}) bloqueado automaticamente por inadimplência.",
-                student.Id,
-                student.Name);
+                "Matrícula {EnrollmentId} do aluno {StudentId} cancelada automaticamente por inadimplência.",
+                enrollment.Id,
+                studentId);
         }
 
-        if (blockedCount > 0)
+        if (cancelledCount > 0)
         {
             await unitOfWork.CommitAsync(cancellationToken);
             _logger.LogInformation(
-                "{Count} aluno(s) bloqueado(s) automaticamente por inadimplência.",
-                blockedCount);
+                "{Count} matrícula(s) cancelada(s) automaticamente por inadimplência.",
+                cancelledCount);
         }
     }
 }
