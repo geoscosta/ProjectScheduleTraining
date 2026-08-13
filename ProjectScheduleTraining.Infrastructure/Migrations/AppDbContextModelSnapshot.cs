@@ -22,10 +22,56 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ProjectScheduleTraining.Domain.Entities.Contractor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Cnpj")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Contractor");
+                });
+
             modelBuilder.Entity("ProjectScheduleTraining.Domain.Entities.Enrollment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("CancellationOption")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("CancellationPenaltyAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("ContractorId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -61,14 +107,21 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                     b.Property<Guid>("StudentId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("SubstituteStudentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ContractorId");
+
                     b.HasIndex("PlanId");
 
                     b.HasIndex("StudentId");
+
+                    b.HasIndex("SubstituteStudentId");
 
                     b.ToTable("Enrollments", (string)null);
                 });
@@ -832,6 +885,10 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
 
             modelBuilder.Entity("ProjectScheduleTraining.Domain.Entities.Enrollment", b =>
                 {
+                    b.HasOne("ProjectScheduleTraining.Domain.Entities.Contractor", "Contractor")
+                        .WithMany()
+                        .HasForeignKey("ContractorId");
+
                     b.HasOne("ProjectScheduleTraining.Domain.Entities.Plan", "Plan")
                         .WithMany()
                         .HasForeignKey("PlanId")
@@ -844,9 +901,17 @@ namespace ProjectScheduleTraining.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("ProjectScheduleTraining.Domain.Entities.Student", "SubstituteStudent")
+                        .WithMany()
+                        .HasForeignKey("SubstituteStudentId");
+
+                    b.Navigation("Contractor");
+
                     b.Navigation("Plan");
 
                     b.Navigation("Student");
+
+                    b.Navigation("SubstituteStudent");
                 });
 
             modelBuilder.Entity("ProjectScheduleTraining.Domain.Entities.Financial", b =>
