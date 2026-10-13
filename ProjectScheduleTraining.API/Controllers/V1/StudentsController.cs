@@ -27,7 +27,7 @@ public class StudentsController : ControllerBase
     /// Acessível por Admin, Trainer e Receptionist.
     /// </summary>
     [HttpGet]
-    [Authorize(Policy = "TrainerOrAdmin")]
+    [Authorize(Policy = "ReceptionistOrAdmin")]
     [ProducesResponseType(typeof(IEnumerable<StudentSummaryResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
