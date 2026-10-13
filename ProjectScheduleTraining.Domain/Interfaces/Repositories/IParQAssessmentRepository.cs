@@ -20,5 +20,12 @@ namespace ProjectScheduleTraining.Domain.Interfaces.Repositories
         Task<bool> HasValidAssessmentAsync(
             Guid studentId,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Retorna todas as avaliações PAR-Q de um aluno ordenadas da mais recente.
+        /// </summary>
+        Task<IEnumerable<ParQAssessment>> GetAllByStudentIdAsync(
+            Guid studentId,
+            CancellationToken cancellationToken = default);
     }
 }

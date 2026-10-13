@@ -32,5 +32,16 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Repositories
             CancellationToken cancellationToken = default)
             => await _dbSet
                 .AnyAsync(x => x.StudentId == studentId && x.IsCleared, cancellationToken);
+
+        /// <summary>
+        /// Retorna todas as avaliações PAR-Q de um aluno ordenadas da mais recente.
+        /// </summary>
+        public async Task<IEnumerable<ParQAssessment>> GetAllByStudentIdAsync(
+            Guid studentId,
+            CancellationToken cancellationToken = default)
+            => await _dbSet
+                .Where(x => x.StudentId == studentId)
+                .OrderByDescending(x => x.AssessmentDate)
+                .ToListAsync(cancellationToken);
     }
 }

@@ -57,5 +57,20 @@ namespace ProjectScheduleTraining.API.Controllers.V1
                 new { studentId = result.StudentId },
                 result);
         }
+
+        /// <summary>
+        /// Retorna todas as avaliações PAR-Q de um aluno.
+        /// </summary>
+        [HttpGet("student/{studentId:guid}")]
+        [ProducesResponseType(typeof(IEnumerable<ParQAssessmentResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllByStudent(
+            Guid studentId,
+            CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(
+                new GetAllParQAssessmentsByStudentIdQuery(studentId),
+                cancellationToken);
+            return Ok(result);
+        }
     }
 }
