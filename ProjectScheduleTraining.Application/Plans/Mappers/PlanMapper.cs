@@ -36,6 +36,7 @@ namespace ProjectScheduleTraining.Application.Plans.Mappers
                 plan.Type,
                 plan.WeeklyFrequency,
                 plan.DurationMonths,
-                plan.Price);
+                plan.Price,
+                plan.IsActive);
     }
 }

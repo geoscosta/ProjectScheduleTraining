@@ -32,12 +32,16 @@ namespace ProjectScheduleTraining.Application.Schedules.Mappers
         /// Utilizado em listagens e visualização de agenda.
         /// </summary>
         public static ScheduleSummaryResponse ToSummaryResponse(Schedule schedule)
-            => new(
-                schedule.Id,
-                schedule.Date,
-                schedule.StartTime,
-                schedule.EndTime,
-                schedule.MaxCapacity - schedule.OccupiedSlots,
-                schedule.Status);
+    => new(
+        schedule.Id,
+        schedule.Date,
+        schedule.StartTime,
+        schedule.EndTime,
+        schedule.SessionType,
+        schedule.MaxCapacity,
+        schedule.OccupiedSlots,
+        schedule.MaxCapacity - schedule.OccupiedSlots,
+        schedule.Status,
+        schedule.Notes);
     }
 }

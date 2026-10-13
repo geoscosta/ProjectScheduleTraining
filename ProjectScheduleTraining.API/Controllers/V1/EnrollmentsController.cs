@@ -35,6 +35,7 @@ public class EnrollmentsController : ControllerBase
     [HttpGet("student/{studentId:guid}")]
     [Authorize(Policy = "AllRoles")]
     [ProducesResponseType(typeof(EnrollmentResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByStudentId(Guid studentId, CancellationToken cancellationToken)
     {

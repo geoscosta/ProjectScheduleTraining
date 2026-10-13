@@ -2,6 +2,7 @@
 using ProjectScheduleTraining.Application.Schedules.Commands;
 using ProjectScheduleTraining.Application.Schedules.DTOs;
 using ProjectScheduleTraining.Application.Schedules.Mappers;
+using ProjectScheduleTraining.CrossCutting.Helpers;
 using ProjectScheduleTraining.Domain.Entities;
 using ProjectScheduleTraining.Domain.Enums;
 using ProjectScheduleTraining.Domain.Exceptions;
@@ -35,11 +36,12 @@ namespace ProjectScheduleTraining.Application.Schedules.Handlers
 
             var timeConflict = schedulesOnDate.Any(s =>
                 s.StartTime == request.StartTime &&
+                s.SessionType == request.SessionType &&
                 s.Status != ScheduleStatus.Cancelled);
 
             if (timeConflict)
                 throw new DomainException(
-                    "Já existe um horário cadastrado nessa data e hora.",
+                    "Já existe um horário cadastrado para este tipo de sessão nessa data e hora.",
                     "SCHEDULE_TIME_CONFLICT");
 
             var schedule = new Schedule
@@ -47,7 +49,8 @@ namespace ProjectScheduleTraining.Application.Schedules.Handlers
                 Date = request.Date.Date,
                 StartTime = request.StartTime,
                 EndTime = request.StartTime.Add(TimeSpan.FromHours(1)),
-                MaxCapacity = 5,
+                SessionType = request.SessionType,
+                MaxCapacity = SessionCapacityHelper.GetMaxCapacity(request.SessionType),
                 OccupiedSlots = 0,
                 Status = ScheduleStatus.Available
             };

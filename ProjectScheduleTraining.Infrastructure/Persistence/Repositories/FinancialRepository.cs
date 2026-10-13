@@ -67,5 +67,22 @@ namespace ProjectScheduleTraining.Infrastructure.Persistence.Repositories
                 .Distinct()
                 .ToListAsync(cancellationToken);
         }
+
+        /// <summary>
+        /// Atualiza em lote o status de cobranças pendentes cuja data de vencimento
+        /// já passou para Overdue. Executado pelo UpdateOverdueFinancialsJob a cada 6h.
+        /// </summary>
+        public async Task UpdateOverdueStatusAsync(CancellationToken cancellationToken = default)
+        {
+            var today = DateTime.UtcNow.Date;
+
+            await _dbSet
+                .Where(f =>
+                    f.Status == FinancialStatus.Pending &&
+                    f.DueDate.Date < today)
+                .ExecuteUpdateAsync(s =>
+                    s.SetProperty(f => f.Status, FinancialStatus.Overdue),
+                    cancellationToken);
+        }
     }
 }

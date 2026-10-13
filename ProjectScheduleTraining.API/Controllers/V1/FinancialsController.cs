@@ -109,4 +109,17 @@ public class FinancialsController : ControllerBase
         var result = await _mediator.Send(new GetFinancialReportQuery(reportMonth, reportYear), cancellationToken);
         return Ok(result);
     }
+
+    /// <summary>
+    /// Retorna todas as cobranças do sistema.
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<FinancialResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(
+            new GetAllFinancialsQuery(),
+            cancellationToken);
+        return Ok(result);
+    }
 }

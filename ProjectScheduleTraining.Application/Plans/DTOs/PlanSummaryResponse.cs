@@ -12,5 +12,6 @@ namespace ProjectScheduleTraining.Application.Plans.DTOs
         PlanType Type,
         WeeklyFrequency WeeklyFrequency,
         int DurationMonths,
-        decimal Price);
+        decimal Price,
+        bool IsActive);
 }

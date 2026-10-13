@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using ProjectScheduleTraining.Application.Schedules.DTOs;
+using ProjectScheduleTraining.Domain.Enums;
 
 namespace ProjectScheduleTraining.Application.Schedules.Commands
 {
@@ -9,5 +10,6 @@ namespace ProjectScheduleTraining.Application.Schedules.Commands
     /// </summary>
     public record CreateScheduleCommand(
         DateTime Date,
+        SessionType SessionType,
         TimeSpan StartTime) : IRequest<ScheduleResponse>;
 }

@@ -7,10 +7,14 @@ namespace ProjectScheduleTraining.Application.Schedules.DTOs
     /// Utilizado em listagens e visualização de agenda.
     /// </summary>
     public record ScheduleSummaryResponse(
-        Guid Id,
-        DateTime Date,
-        TimeSpan StartTime,
-        TimeSpan EndTime,
-        int AvailableSlots,
-        ScheduleStatus Status);
+    Guid Id,
+    DateTime Date,
+    TimeSpan StartTime,
+    TimeSpan EndTime,
+    SessionType SessionType,
+    int MaxCapacity,
+    int OccupiedSlots,
+    int AvailableSlots,
+    ScheduleStatus Status,
+    string? Notes);
 }

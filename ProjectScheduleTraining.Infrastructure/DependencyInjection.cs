@@ -123,6 +123,7 @@ public static class DependencyInjection
         services.AddHostedService<AutoBlockOverdueStudentsJob>();
         services.AddHostedService<YearEndRecessJob>();
         services.AddHostedService<AnnualPriceReadjustmentJob>();
+        services.AddHostedService<UpdateOverdueFinancialsJob>();
         return services;
     }
 }

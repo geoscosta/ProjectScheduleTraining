@@ -14,5 +14,10 @@ namespace ProjectScheduleTraining.Domain.Interfaces.Repositories
         /// há mais de N dias e que ainda estão ativos.
         /// </summary>
         Task<IEnumerable<Guid>> GetStudentIdsWithOverdueFinancialsAsync(int daysOverdue, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Atualiza o status de cobranças pendentes vencidas para Overdue.
+        /// </summary>
+        Task UpdateOverdueStatusAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -32,9 +32,7 @@ namespace ProjectScheduleTraining.Application.Enrollments.Handlers
                 .GetByStudentIdAsync(request.StudentId, cancellationToken);
 
             if (enrollment is null)
-                throw new DomainException(
-                    "Aluno não possui matrícula ativa.",
-                    "ENROLLMENT_NOT_FOUND");
+                return null;
 
             return EnrollmentMapper.ToResponse(enrollment);
         }
